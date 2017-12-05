@@ -3,7 +3,8 @@ close all
 clear
 
 %dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+%dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+dirPath = 'D:\BrainSwayData\'
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 
