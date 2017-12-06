@@ -3,9 +3,15 @@ function M = RiemannianMean(tC)
 Np = size(tC, 3);
 M  = mean(tC, 3);
 
-h = waitbar(0, 'Riemannian Mean');
+WAITBAR = false;
+
+if WAITBAR == true
+    h = waitbar(0, 'Riemannian Mean');
+end
 for ii = 1 : 20
-    waitbar(ii / 20);
+    if WAITBAR == true
+        waitbar(ii / 20);
+    end
     A = M ^ (1/2);      %-- A = C^(1/2)
     B = A ^ (-1);       %-- B = C^(-1/2)
         
@@ -23,6 +29,8 @@ for ii = 1 : 20
         break;
     end
 end
-close(h);
+if WAITBAR == true
+    close(h);
+end
 
 end
