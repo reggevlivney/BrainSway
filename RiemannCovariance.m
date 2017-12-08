@@ -21,14 +21,16 @@ vSubjectsInSession = vSubjectIdx;
 
 %% Create Cov matricies and Riemann averages
 % mData = nan(D, 0);
-tDataCov = nan(Nelc,Nelc,0);
-vScore   = [];
+tDataCov   = nan(Nelc,Nelc,0);
+vScore     = [];
+vPowerMean = nan(Nelc,0);
 
 for ii = 1 : Ns
-    ii
     subject = vSubjectIdx(ii);
     
     for ss = vSessions
+        disp(['Calculating for subject ' num2str(ii) ' of ' num2str(Ns) ...
+            ', session ' num2str(ss)]);
         fileName = ['LICI_CSD-mat\session ', num2str(ss) ,'\', num2str(subject),'_', num2str(ss),'.mat']; %Get subject's data    
 
         if ~(exist([dirPath, fileName], 'file') == 2) %Some subjects don't have data
@@ -51,10 +53,11 @@ for ii = 1 : Ns
         end
         
         mMeanXi               = RiemannianMean(tCovXi);
-        vPowerMean(:,:,end+1) = mMeanXi(eye(Nelc)==1); 
+        vPowerMean(:,end+1) = mMeanXi(eye(Nelc)==1); 
         tDataCov(:,:,end+1)   = mMeanXi;
         vScore(end+1)         = XlsFile(ii,ss+1);
     end
+    
 end
 
 %% Extract Classifications from XLS
