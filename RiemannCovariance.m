@@ -12,7 +12,7 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 %% Preprocess data
 vSubjectIdx = XlsFile(:,1);
         
-Nelc       = 62;  % Num of electrodes
+Nelc               = 62;  % Num of electrodes
 vSessions          = 5;
 % vElectordeIdx    = randperm(62, num_of_elctd);  % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
@@ -45,14 +45,15 @@ for ii = 1 : Ns
         tCovXi      = nan(Nelc, Nelc, Nt);
         tCorrXi      = nan(Nelc, Nelc, Nt);
         for tt = 1 : Nt
-            tCovXi(:,:,tt)  = cov(mX(:,:,tt)') + 10 * eye( Nelc );
+            tCovXi(:,:,tt)  = cov(mX(:,:,tt)');
+            tCorrXi(:,:,tt)  = corrcoef(mX(:,:,tt)');
 %           min(eig(tCorrXi(:,:,tt)))
 %           max(eig(tCorrXi(:,:,tt)))
 %           figure; imagesc(tCorrXi(:,:,tt)); colorbar;
 %           figure; plot(eig(tCorrXi(:,:,tt)))
         end
         
-        mMeanXi               = RiemannianMean(tCovXi);
+        mMeanXi               = RiemannianMean(tCorrXi);
         vPowerMean(:,end+1)   = diag(mMeanXi); 
         tDataCov(:,:,end+1)   = mMeanXi;
         vScore(end+1)         = XlsFile(ii,ss+1);
