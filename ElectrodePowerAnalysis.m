@@ -29,5 +29,5 @@ title('Histogram of the relative power of each electrode');
 %%
 %Lets plot the electrode powers compared to the location in the head, using
 %the function we created,scatterElectrodeMap:
-scatterElectrodeMap([1:54 56:62],vElectrodePower);
+scatterElectrodeMap(1:62,vElectrodePower);
 title('Electrode relative power map');
