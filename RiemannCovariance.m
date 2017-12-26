@@ -23,7 +23,7 @@ vSubjectsInSession = vSubjectIdx;
 tDataCov   = nan(Nelc,Nelc,0);
 vScore     = [];
 vPowerMean = nan(Nelc,0);
-
+dimSubSpcMin = Nelc;
 for ii = 1 : Ns
     subject = vSubjectIdx(ii);
     
@@ -39,26 +39,43 @@ for ii = 1 : Ns
         load([dirPath, fileName]);
         disp(['Calculating for subject ' num2str(ii) ' of ' num2str(Ns) ...
             ', session ' num2str(ss)]);
-
+        
         mX          = data;
         Nt          = size(mX, 3);
-        tCovXi      = nan(Nelc, Nelc, Nt);
-        tCorrXi      = nan(Nelc, Nelc, Nt);
+        
+        %%% Projection of mX to non-singular subspace
+       [mU, mS, ~]  = svd( mX(:,:,1) );
+       dimSubSpc    = sum(diag(mS)>1);
+       dimSubSpcMin = min([dimSubSpc,dimSubSpcMin]);
+       mUSubSpc     = mU(:,1:dimSubSpc);
+       
+       mXSubSpc     = nan( dimSubSpc , 2000 , Nt );
+          for tt = 1 : Nt
+                  mXSubSpc(:,:,tt) = mUSubSpc'*mX(:,:,tt);
+          end
+          
+          %%% Covariance calculation. To use code without projection,
+          %%% uncomment these 2 lines and comment the projection code.
+%         dimSubSpc    = Nelc;
+%         mXSubSpc     = mX;
+        tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
+        tCorrXi      = nan(dimSubSpc, dimSubSpc, Nt);
         for tt = 1 : Nt
-            tCovXi(:,:,tt)  = cov(mX(:,:,tt)');
-            tCorrXi(:,:,tt)  = corrcoef(mX(:,:,tt)');
+            tCovXi(:,:,tt)  = cov(mXSubSpc(:,:,tt)');
+            tCorrXi(:,:,tt)  = corrcoef(mXSubSpc(:,:,tt)');
 %           min(eig(tCorrXi(:,:,tt)))
 %           max(eig(tCorrXi(:,:,tt)))
 %           figure; imagesc(tCorrXi(:,:,tt)); colorbar;
 %           figure; plot(eig(tCorrXi(:,:,tt)))
         end
         
-        mMeanXi               = RiemannianMean(tCorrXi);
-        vPowerMean(:,end+1)   = diag(mMeanXi); 
-        tDataCov(:,:,end+1)   = mMeanXi;
-        vScore(end+1)         = XlsFile(ii,ss+1);
+        mMeanXi                         = RiemannianMean(tCovXi);
+        vPowerMean(1:dimSubSpc,end+1)   = diag(mMeanXi); 
+        
+        tDataCov(1:dimSubSpc,1:dimSubSpc,end+1)   = mMeanXi;
+        vScore(end+1)                             = XlsFile(ii,ss+1);
     end
-    
+    tDataCov = tDataCov(1:dimSubSpcMin,1:dimSubSpcMin,:);
 end
 disp('Done!');
 %% Extract Classifications from XLS
