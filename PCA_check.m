@@ -17,11 +17,11 @@ vElectordeIdx      = randperm(62, num_of_elctd);  % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
 vSubjectsInSession = vSubjectIdx;
 vSessions          = [2 3 4 5];
-pca_dim            = 4;
+pca_dim            = 2;
 
 % mData = nan(D, 0);
 
-%% Perform PCA 
+%% Perform PCA (time)
 mPCA = nan(num_of_elctd,0);
 for ii = 1 : Ns
     ii 
@@ -42,21 +42,89 @@ for ii = 1 : Ns
     mX                      = data(vElectordeIdx,:,:);
     mXMean                  = mean(mX,3);
     [coeff,score,latent]    = pca(mXMean);
-    mPCA(:,end+1)           = sum(score(:,1:pca_dim),2);
+    mPCA(:,end+1)           = sum(abs(score(:,1:pca_dim)),2);
     end
 end
 
 %% Scatter the principal electrodes
-vPCAMean    =    mean(mPCA,2);
-scatterElectrodeMap(vElectordeIdx,vPCAMean);
+vTimePCAMean    =    mean(mPCA,2);
+scatterElectrodeMap(vElectordeIdx,vTimePCAMean);
+title('Principal Electrodes - Time analysis');
 
-%%
 
-clearvars -except D dirPath mData Ns num_of_elctd vSubjectIdx XlsFile...
-                  vSubjectsInSession
- %%
- 
+%% Perform PCA (freq)
+mPCAf = nan(num_of_elctd,0); 
+
+for ii = 1 : Ns
+    ii 
+    subject  = vSubjectIdx(ii);
+    for ss = vSessions
+        fileName = ['LICI_CSD-mat\session ', num2str(ss) ,'\', num2str(subject),'_', num2str(ss),'.mat']; %Get subject's data    
+
+        if ~(exist([dirPath, fileName], 'file') == 2) %Some subjects don't have data
+            vSubjectsInSession(vSubjectsInSession == subject) = [];
+            disp(['Missing data for subject ' num2str(ii) ' of '...
+             num2str(Ns) ', session ' num2str(ss)]);
+            continue;
+        end
+        load([dirPath, fileName]);
+        disp(['Calculating for subject ' num2str(ii) ' of ' num2str(Ns) ...
+            ', session ' num2str(ss)]);
+    
+    mX                      = data(vElectordeIdx,:,:);
     mXF     = fft(mX, [], 2);
     mXfAbs  = abs(mXF); %This will cancel time-shift effects
     mXfMean = mean(mXfAbs, 3);
+    [coeff,score,latent]    = pca(mXfMean);
+    mPCAf(:,end+1)          = sum(abs(score(:,1:pca_dim)),2);
+    end
+end
+
+%% Scatter the principal electrodes
+vFreqPCAMean    =    mean(mPCAf,2);
+scatterElectrodeMap(vElectordeIdx,vFreqPCAMean);
+title('Principal Electrodes - Frequency analysis');
+
+%% Perform PCA - without the peak (time)
+mPCA    = nan(num_of_elctd,0);
+scores  = zeros(num_of_elctd,pca_dim)
+tmin    = 500;
+tmax    = 1500;
+
+for ii = 1 : Ns
+    ii 
+    subject  = vSubjectIdx(ii);
+    for ss = vSessions
+        fileName = ['LICI_CSD-mat\session ', num2str(ss) ,'\', num2str(subject),'_', num2str(ss),'.mat']; %Get subject's data    
+
+        if ~(exist([dirPath, fileName], 'file') == 2) %Some subjects don't have data
+            vSubjectsInSession(vSubjectsInSession == subject) = [];
+            disp(['Missing data for subject ' num2str(ii) ' of '...
+             num2str(Ns) ', session ' num2str(ss)]);
+            continue;
+        end
+        load([dirPath, fileName]);
+        disp(['Calculating for subject ' num2str(ii) ' of ' num2str(Ns) ...
+            ', session ' num2str(ss)]);
     
+    mX                      = data(vElectordeIdx,:,:);
+    mX                      = mX(:,[1:tmin,tmax:size(mX,2)],:);
+    mXMean                  = mean(mX,3);
+    [coeff,score,latent]    = pca(mXMean);
+    mPCA(:,end+1)           = sum(abs(score(:,1:pca_dim)),2);
+    scores                  = scores + abs(score(:,1:pca_dim));
+    end
+end
+
+%% Scatter the principal electrodes
+vTimePCAMean    =    mean(mPCA,2);
+scatterElectrodeMap(vElectordeIdx,vTimePCAMean);
+title('Principal Electrodes - Time analysis without the peak');
+%% Scatter by groups
+[~,I]           =    maxk(scores,5);
+vGroups         =    zeros(1,num_of_elctd);
+for ii = 1:pca_dim
+    vGroups(I(:,ii))  =    vGroups(I(:,ii)) + ii;
+end
+scatterElectrodeMap(vElectordeIdx,vGroups);
+title('Principal groups - Time analysis without the peak');
