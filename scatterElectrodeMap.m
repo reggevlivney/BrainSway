@@ -6,7 +6,7 @@ function [] = scatterElectrodeMap(vWhichElec,vElectrodeHeat)
 %   NOTE: Make sure chanlocs62.mat is in the working folder!
 load chanlocs62.mat chanlocs;
 locs=[chanlocs.X;chanlocs.Y;chanlocs.Z];
-figure; scatter3(locs(1,vWhichElec),locs(2,vWhichElec),locs(3,vWhichElec),...
+scatter3(locs(1,vWhichElec),locs(2,vWhichElec),locs(3,vWhichElec),...
     100,vElectrodeHeat,'Fill');
 colorbar; 
 vElcText = num2str(vWhichElec');
