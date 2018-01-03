@@ -44,20 +44,20 @@ for ii = 1 : Ns
         Nt          = size(mX, 3);
         
         %%% Projection of mX to non-singular subspace
-       [mU, mS, ~]  = svd( mX(:,:,1) );
-       dimSubSpc    = sum(diag(mS)>1);
-       dimSubSpcMin = min([dimSubSpc,dimSubSpcMin]);
-       mUSubSpc     = mU(:,1:dimSubSpc);
-       
-       mXSubSpc     = nan( dimSubSpc , 2000 , Nt );
-          for tt = 1 : Nt
-                  mXSubSpc(:,:,tt) = mUSubSpc'*mX(:,:,tt);
-          end
+%        [mU, mS, ~]  = svd( mX(:,:,1) );
+%        dimSubSpc    = sum(diag(mS)>1);
+%        dimSubSpcMin = min([dimSubSpc,dimSubSpcMin]);
+%        mUSubSpc     = mU(:,1:dimSubSpc);
+%        
+%        mXSubSpc     = nan( dimSubSpc , 2000 , Nt );
+%           for tt = 1 : Nt
+%                   mXSubSpc(:,:,tt) = mUSubSpc'*mX(:,:,tt);
+%           end
           
           %%% Covariance calculation. To use code without projection,
           %%% uncomment these 2 lines and comment the projection code.
-%         dimSubSpc    = Nelc;
-%         mXSubSpc     = mX;
+        dimSubSpc    = Nelc;
+        mXSubSpc     = mX;
         tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
         tCorrXi      = nan(dimSubSpc, dimSubSpc, Nt);
         for tt = 1 : Nt

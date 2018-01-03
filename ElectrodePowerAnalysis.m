@@ -1,6 +1,7 @@
 %%
 %We calculated the variance of each electrode.
-figure; imagesc(vPowerMean); colorbar; 
+vPowerMean=abs(vPowerMean);
+figure; imagesc(abs(vPowerMean)); colorbar; 
 title('The variance of each electrode');
 %%
 %This will show the variance of each electrode in each subject. As can be
@@ -29,5 +30,6 @@ title('Histogram of the relative power of each electrode');
 %%
 %Lets plot the electrode powers compared to the location in the head, using
 %the function we created,scatterElectrodeMap:
+vElectordeIdx=1:62;
 scatterElectrodeMap(vElectordeIdx,vElectrodePower);
 title('Electrode relative power map');

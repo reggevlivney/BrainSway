@@ -115,8 +115,9 @@ vIsDepressed    = vIsDepressed(vRemove);
 %%
 mX    = CovsToVecs(tDataCov);
 mPCA  = pca(mX);
-scatter3(mPCA(1,:),mPCA(1,:),mPCA(3,:),...
-    10,vSessionOfCov,'Fill');
+scatter3(mPCA(1,:),mPCA(2,:),mPCA(3,:),...
+    100,vSessionOfCov,'Fill');
+colormap;
 %%
 mVar = nan(91,40);
 for ii = 1:91
