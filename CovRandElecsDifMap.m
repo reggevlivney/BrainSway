@@ -5,14 +5,16 @@ clear;
 
 %% Import Data
 %dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
-% dirPath = 'D:\BrainSwayData\';                  %Matan's Path
+% dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
-vTime              = 1200:2000;
+Nelc2              = 2*Nelc;
+vPreTime           = 1:800;
+vPostTime          = 1201:2000;
 vSessions          = 5;
 vExcludedElcs      = [55];
 vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
@@ -20,12 +22,13 @@ vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
 Ns                 = length(vSubjectIdx); %Number of subjects
 vSubjectsInSession = vSubjectIdx;
 
+
 %% Create Cov matricies and Riemann averages
 % mData             = nan(D, 0);
-tDataCov            = nan(Nelc,Nelc,0);
+tDataCov            = nan(Nelc2,Nelc2,0);
 vScore              = [];
-vPowerMean          = nan(Nelc,0);
-dimSubSpcMin        = Nelc;
+vPowerMean          = nan(Nelc2,0);
+dimSubSpcMin        = Nelc2;
 vSessionOfCov       = [];
 vSubjectOfCov       = [];
 for ii = 1 : Ns
@@ -47,8 +50,9 @@ for ii = 1 : Ns
         vSessionOfCov(end+1)  =   ss;
         vSubjectOfCov(end+1)  =   ii;
         vScore(end+1)         =   XlsFile(ii,ss+1);
-        mX          = data(vElectordeIdx,vTime,:);
-        Nt          = size(mX, 3);
+        mPreX                 = data(vElectordeIdx,vPreTime,:);
+        mPostX                = data(vElectordeIdx,vPostTime,:);
+        Nt                    = size(mPreX, 3);
         
         %%% Projection of mX to non-singular subspace
 %        [mU, mS, ~]  = svd( mX(:,:,1) );
@@ -63,8 +67,8 @@ for ii = 1 : Ns
           
           %%% Covariance calculation. To use code without projection,
           %%% uncomment these 2 lines and comment the projection code.
-        dimSubSpc    = Nelc;
-        mXSubSpc     = mX;
+        dimSubSpc    = Nelc2;
+        mXSubSpc     = [mPreX;mPostX];
         tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
         for tt = 1 : Nt
             tCovXi(:,:,tt)  = cov(mXSubSpc(:,:,tt)');
@@ -103,5 +107,4 @@ mDistsDiff   = exp(-mDists.^2/eDiff^2);
 [mVDiff,mDDiff] = eig(mDistsDiff);
 
 mtSNE           = mVDiff*mDDiff;
-
-mtSNE           = tsne(mtSNE',vScore,10,23);
+mtSNE           = tsne(mtSNE,vScore,10,23);
