@@ -5,8 +5,8 @@ clear;
 
 %% Import Data
 %dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
- dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
-%dirPath = 'D:\BrainSwayData\';                  %Matan's Path
+%  dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Parameters of data (cut unwanted parts)
@@ -107,4 +107,4 @@ mDistsDiff   = exp(-mDists.^2/eDiff^2);
 [mVDiff,mDDiff] = eig(mDistsDiff);
 
 mtSNE           = mVDiff*mDDiff;
-mtSNE           = tsne(mtSNE,vScore,10,23);
+mtSNE           = TSNE(mtSNE,vScore,10,23);
