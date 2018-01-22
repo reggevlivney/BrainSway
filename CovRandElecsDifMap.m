@@ -13,8 +13,8 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
 Nelc2              = 2*Nelc;
-vPreTime           = 1:800;
-vPostTime          = 1201:2000;
+vPreTime           = 201:900;
+vPostTime          = 1301:2000;
 vSessions          = 5;
 vExcludedElcs      = [55];
 vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
@@ -82,12 +82,12 @@ end
 disp('Done!');
 
 %% Eigenvecs
-kSubj = 8;
+kSubj = 1;
 kVec = 3;
 [mV,~]=eig(tDataCov(:,:,kSubj));
 figure;
 subplot(1,2,1);
-scatterElectrodeMap(vElectordeIdx,mV(:,kVec))
+scatterElectrodeMap(vElectordeIdx,mV(vElectordeIdx,kVec))
 subplot(1,2,2);
 imagesc(mV); colorbar;
 
