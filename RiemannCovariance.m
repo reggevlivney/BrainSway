@@ -5,8 +5,8 @@ clear;
 
 %% Import Data
 %dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
-% dirPath = 'D:\BrainSwayData\';                  %Matan's Path
+% dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Preprocess data
@@ -57,7 +57,8 @@ for ii = 1 : Ns
           %%% Covariance calculation. To use code without projection,
           %%% uncomment these 2 lines and comment the projection code.
         dimSubSpc    = Nelc;
-        mXSubSpc     = mX;
+%         mXSubSpc     = mX;        
+        mXSubSpc     = mX(:,1200:2000,:);
         tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
         tCorrXi      = nan(dimSubSpc, dimSubSpc, Nt);
         for tt = 1 : Nt
