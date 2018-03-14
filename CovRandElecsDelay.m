@@ -5,10 +5,10 @@ clear;
 
 %% Import Data
 %dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-%  dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
-dirPath = 'D:\BrainSwayData\';                  %Matan's Path
+ dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+%dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
-
+addpath('tSNE_matlab\');
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
@@ -18,6 +18,7 @@ vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
                        'Replace',false)); % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
 vSubjectsInSession = vSubjectIdx;
+Nshift             = 10;
 
 
 %% Create Cov matricies and Riemann averages
@@ -47,8 +48,8 @@ for ii = 1 : Ns
         vSubjectOfCov(end+1)  =   ii;
         vScore(end+1)         =   XlsFile(ii,ss+1);
         mX                    = data(vElectordeIdx,:,:);
-        mPreX                 = data(vElectordeIdx,1:1999,:);
-        mPostX                = data(vElectordeIdx,2:2000,:);
+        mPreX                 = data(vElectordeIdx,1:2000-Nshift,:);
+        mPostX                = data(vElectordeIdx,1+Nshift:2000,:);
         Nt                    = size(mPreX, 3);
         
           %%% Covariance calculation. To use code without projection,
