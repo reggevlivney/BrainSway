@@ -13,12 +13,12 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
 vPostTime          = 1030:1400;
-vSessions          = 5;
+vSessions          = 2:5;
 vExcludedElcs      = [55];
 vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
                        'Replace',false)); % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
-Npeaks             = 3; %Number of peaks to look for
+Npeaks             = 1; %Number of peaks to look for
 vSubjectsInSession = vSubjectIdx;
 
 %% Create Cov matricies and Riemann averages
@@ -52,12 +52,9 @@ for ii = 1 : Ns
         mMaxInd               =   nan(Npeaks,Nelc,Nt);
         mMaxInd2              =   nan(Npeaks,Nelc);
         mMaxInd3              =   nan(Npeaks,Nelc);
-        Nfiltlength           =   20;
-        vFilt                 =   (1/Nfiltlength)*ones(Nfiltlength);
         for ee = 1:Nelc
             for tt = 1:Nt
                 vMeasure                 =   abs(mPostX(:,ee,tt));
-                vMeasure                 =   imfilter(vMeasure,vFilt);
                 [vMaxValAll,vMaxIndAll]  =   findpeaks(vMeasure);
                 [~,vOrder]               =   sort(vMaxValAll,'descend');
                 vOrder                   =   sort(vOrder(1:Npeaks),'ascend');
@@ -79,5 +76,19 @@ end
 disp('Done!');
 
 %% Prepare for Regression Training
-tData2 = reshape(tDataCov,[180,23])';
+tData2 = reshape(tDataCov,[45,91])';
 tData2  = [tData2 , vScore'];
+
+tData3  = tData2(:,1:end-1);
+
+%% PCA
+coeff = pca(tData3);
+new_data = tData3*coeff(:,1:3);
+
+scatter3(new_data(:,1),new_data(:,2),new_data(:,3),...
+    50,vScore,'Fill');
+zlabel({'\psi_3'});
+ylabel({'\psi_2'});
+xlabel({'\psi_1'});
+title({'PCA result, with peak time in each electrode as features'});
+colorbar;
