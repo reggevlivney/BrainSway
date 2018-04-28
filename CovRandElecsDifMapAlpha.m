@@ -11,7 +11,7 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
-Nelc               = 40;  % Num of electrodes
+Nelc               = 10;  % Num of electrodes
 vSessions          = 5;
 vExcludedElcs      = [55];
 vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
@@ -52,14 +52,20 @@ for ii = 1 : Ns
         Nt          = size(mX, 3);
 
         dimSubSpc    = Nelc;
-        mXSubSpc     = nan(2*dimSubSpc, 2000, Nt);
-        for hh = 1:Nt
+        mXSubSpc     = nan(4*dimSubSpc, 2000, Nt);
+        for hh = 4:13
             for jj = 1:Nelc
-                mXSubSpc(2*jj-1,:,hh)       = alpha(mX(jj,:,hh));
-                mXSubSpc(2*jj,:,hh)         = beta(mX(jj,:,hh));
+                [ss,jj,hh]
+                mXSubSpc(4*jj-3,:,hh)       = delta_filter(mX(jj,:,hh));
+                mXSubSpc(4*jj-2,:,hh)       = theta_filter(mX(jj,:,hh));
+                mXSubSpc(4*jj-1,:,hh)       = alpha_filter(mX(jj,:,hh));
+                mXSubSpc(4*jj,:,hh)         = beta_filter(mX(jj,:,hh));
             end 
         end
-        tCovXi       = nan(2*dimSubSpc, 2*dimSubSpc, Nt);
+        mat_name = "FilteredSignals\session_"+num2str(ss)+"_subject_"+num2str(ii);
+        save(mat_name+".mat",'mXSubSpc');
+        
+        tCovXi       = nan(4*dimSubSpc, 4*dimSubSpc, Nt);
         for tt = 1 : Nt
             tCovXi(:,:,tt)  = cov(mXSubSpc(:,:,tt)');
         end
