@@ -13,7 +13,7 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 vSubjectIdx = XlsFile(:,1);
         
 Nelc               = 40;  % Num of electrodes
-vSessions          = 1:6;
+vSessions          = 2:5;
 vElectordeIdx      = sort(randperm(62, Nelc));  % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
 vSubjectsInSession = vSubjectIdx;
@@ -22,54 +22,63 @@ vSubjectsInSession = vSubjectIdx;
 % mData             = nan(D, 0);
 tDataCov            = nan(Nelc,Nelc,0);
 vScore              = [];
+vPowerMean          = nan(Nelc,0);
+dimSubSpcMin        = Nelc;
 vSessionOfCov       = [];
 for ii = 1 : Ns
     subject = vSubjectIdx(ii);
     
     for ss = vSessions
-        fileName1 = ['baseline\mat\Exp_EC_5013', num2str(subject),'_', num2str(ss),'.mat']; %Get subject's data    
-        fileName2 = ['baseline\mat\Exp_EC_5213', num2str(subject),'_', num2str(ss),'.mat'];
-        if ~(exist([dirPath, fileName1], 'file') == 2) && ...
-           ~(exist([dirPath, fileName2], 'file') == 2) %Some subjects don't have data
-            
+        fileName = ['LICI_CSD-mat\session ', num2str(ss) ,'\', num2str(subject),'_', num2str(ss),'.mat']; %Get subject's data    
+
+        if ~(exist([dirPath, fileName], 'file') == 2) %Some subjects don't have data
             vSubjectsInSession(vSubjectsInSession == subject) = [];
             disp(['Missing data for subject ' num2str(ii) ' of '...
              num2str(Ns) ', session ' num2str(ss)]);
             continue;
         end
-        if (exist([dirPath, fileName1], 'file') == 2)
-            fileName = fileName1;
-        else
-            fileName = fileName2;
-        end
-        
         load([dirPath, fileName]);
         disp(['Calculating for subject ' num2str(ii) ' of ' num2str(Ns) ...
             ', session ' num2str(ss)]);
         
         vSessionOfCov(end+1)  =   ss;
         
-        mXp         = data(vElectordeIdx,1:1000*floor(size(data,2)/1000));
-        mX          = nan(Nelc,2000,0);
-        loc         = 1;
-        while (loc+1999< size(mXp,2))
-            mX(:,:,end+1) = mXp(:,loc:loc+1999);
-            loc = loc + 1000;
-        end
-        
-        mX          = abs(fft(mX,[],2));
-        mY          = repmat(sum(mX.^2,2),[1,2000]);
-        mX          = mX./mY;
+        mX          = data(vElectordeIdx,:,:);
         Nt          = size(mX, 3);
-        tCovXi       = nan(Nelc, Nelc, Nt);
+        
+        %%% Projection of mX to non-singular subspace
+%        [mU, mS, ~]  = svd( mX(:,:,1) );
+%        dimSubSpc    = sum(diag(mS)>1);
+%        dimSubSpcMin = min([dimSubSpc,dimSubSpcMin]);
+%        mUSubSpc     = mU(:,1:dimSubSpc);
+%        
+%        mXSubSpc     = nan( dimSubSpc , 2000 , Nt );
+%           for tt = 1 : Nt
+%                   mXSubSpc(:,:,tt) = mUSubSpc'*mX(:,:,tt);
+%           end
+          
+          %%% Covariance calculation. To use code without projection,
+          %%% uncomment these 2 lines and comment the projection code.
+        dimSubSpc    = Nelc;
+        mXSubSpc     = mX;
+        tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
+        tCorrXi      = nan(dimSubSpc, dimSubSpc, Nt);
         for tt = 1 : Nt
-            tCovXi(:,:,tt)  = cov(mX(:,:,tt)');
+            tCovXi(:,:,tt)  = cov(mXSubSpc(:,:,tt)');
+            tCorrXi(:,:,tt)  = corrcoef(mXSubSpc(:,:,tt)');
+%           min(eig(tCorrXi(:,:,tt)))
+%           max(eig(tCorrXi(:,:,tt)))
+%           figure; imagesc(tCorrXi(:,:,tt)); colorbar;
+%           figure; plot(eig(tCorrXi(:,:,tt)))
         end
         
-        mMeanXi                         = RiemannianMean(tCovXi);        
-        tDataCov(1:Nelc,1:Nelc,end+1)   = mMeanXi;
+        mMeanXi                         = RiemannianMean(tCovXi);
+        vPowerMean(1:dimSubSpc,end+1)   = diag(mMeanXi); 
+        
+        tDataCov(1:dimSubSpc,1:dimSubSpc,end+1)   = mMeanXi;
         vScore(end+1)                             = XlsFile(ii,ss+1);
     end
+    tDataCov = tDataCov(1:dimSubSpcMin,1:dimSubSpcMin,:);
 end
 disp('Done!');
 
@@ -92,7 +101,11 @@ for ss = 1:size(tDataCov,3)
 end
 mCovVecs=CovsToVecs(t2dCovs);
 scatter3(mCovVecs(1,:),mCovVecs(2,:),mCovVecs(3,:),...
-    10,vScore,'Fill');
+    50,vScore,'Fill');
+zlabel({'\psi_3'});
+ylabel({'\psi_2'});
+xlabel({'\psi_1'});
+title({'Covariance of baseline plotted as vectors, with random electrodes selected'});
 colorbar;
 %% Extract Classifications from XLS
 vDHRS           = XlsFile(:,9)';
