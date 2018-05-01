@@ -12,7 +12,7 @@ addpath('tSNE_matlab\');
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
-vSessions          = 5;
+vSessions          = 2:5;
 vExcludedElcs      = [55];
 vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
                        'Replace',false)); % Pick random electrodes
@@ -48,8 +48,8 @@ for ii = 1 : Ns
         vSubjectOfCov(end+1)  =   ii;
         vScore(end+1)         =   XlsFile(ii,ss+1);
         mX                    = data(vElectordeIdx,:,:);
-        mPreX                 = data(vElectordeIdx,1:2000-Nshift,:);
-        mPostX                = data(vElectordeIdx,1+Nshift:2000,:);
+        mPreX                 = data(vElectordeIdx,1:(2000-Nshift),:);
+        mPostX                = data(vElectordeIdx,(1+Nshift):2000,:);
         Nt                    = size(mPreX, 3);
         
           %%% Covariance calculation. To use code without projection,
@@ -58,7 +58,7 @@ for ii = 1 : Ns
         tExCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
         tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
         for tt = 1 : Nt
-            tExCovXi(:,:,tt)  = mPreX(:,:,tt)*mPostX(:,:,tt)'/1999;
+            tExCovXi(:,:,tt)  = mPreX(:,:,tt)*mPostX(:,:,tt)'/(2000-Nshift);
         end
         
         for tt = 1 : Nt

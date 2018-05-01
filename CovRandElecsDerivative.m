@@ -12,7 +12,7 @@ addpath('tSNE_matlab\');
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
-vSessions          = 5;
+vSessions          = 2:5;
 vExcludedElcs      = [55];
 vElectordeIdx      = sort(datasample(setdiff(1:62,vExcludedElcs),Nelc,...
                        'Replace',false)); % Pick random electrodes
