@@ -11,7 +11,7 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
-Nelc               = 35;  % Num of electrodes
+Nelc               = 30;  % Num of electrodes
 vPeakTime          = 1020:1300;
 vSessions          = 2:5;
 vExcludedElcs      = [55];
@@ -79,4 +79,19 @@ mtSNE           = mVDiff*mDDiff;
 mtSNE           = TSNE(mtSNE,vScore,3,Nmats);
 
 %% Parallel Transport
-tDataVecs = CovsToVecs(tDataCov);
+tMeanCovs = nan(Nelc,Nelc,Ns);
+for ii = 1:Ns
+    tMeanCovs(:,:,ii) = RiemannianMean(tDataCov(:,:,vSubjectOfCov==ii));
+    disp(num2str(ii));
+end
+
+tTotalMean = RiemannianMean(tMeanCovs);
+tDataCov2 = tDataCov;
+NLt = size(tDataCov,3);
+mB = tMeanCovs(:,:,1);
+for jj = 1:NLt
+    mAinv               = pinv(tMeanCovs(:,:,vSubjectOfCov(jj)));
+    mE                  = (mB*mAinv)^(0.5);
+    tDataCov2(:,:,jj)   = mE*tDataCov(:,:,jj)*mE';
+    disp(num2str(jj));
+end
