@@ -11,7 +11,7 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Parameters of data (cut unwanted parts)
 vSubjectIdx        = XlsFile(:,1);   
-Nelc               = 10;  % Num of electrodes
+Nelc               = 1;  % Num of electrodes
 vBaseTime          = [1:500,1501:2000];
 vPeakTime          = 501:1500;
 vSessions          = 2:5;
@@ -34,6 +34,8 @@ vSubjectOfCov       = [];
 
 iiDist              = nan(Ns,length(vSessions));
 iiScore             = nan(Ns,length(vSessions));
+
+ffAvg               = nan(Ns,4*length(vSessions)); 
 
 for ii = 1 : Ns
     subject = vSubjectIdx(ii);
@@ -63,73 +65,24 @@ for ii = 1 : Ns
             end
         end
         
-        vSessionOfCov(end+1)  =     ss;
-        vSubjectOfCov(end+1)  =     ii;
-        vScore(end+1)         =     XlsFile(ii,ss+1)-XlsFile(ii,2);
-        mPeakX                =     p_data.data(vElectordeIdx,:,:);
-        mBaseX                =     b_data.data(vElectordeIdx,10000:23000,:);
-        Nt                    =     size(mPeakX, 3);
+        mBaseX                =     b_data.data(5,10000:23000,:);
 
-        dimSubSpc        = Nelc;
-        tPeakCovXi       = nan(dimSubSpc, dimSubSpc, Nt);
-        tBaseCovXi       = nan(dimSubSpc, dimSubSpc);
-
-%         for tt = 1:Nt
-%             tPeakCov(1:dimSubSpc,1:dimSubSpc,end+1)   = cov(mPeakX(:,:,tt)');
-%             tBaseCov(1:dimSubSpc,1:dimSubSpc,end+1)   = cov(mBaseX(:,:,tt)');
-%             vScore(end+1)                             = XlsFile(ii,ss+1);
-%         end
-       
-        for tt = 1 : Nt
-            tPeakCovXi(:,:,tt)  = cov(mPeakX(:,:,tt)');
-        end
+        ffAvg(ii,4*(ss-1) - 3)     =     mean(alpha_filter(mBaseX).^2);
+        ffAvg(ii,4*(ss-1) - 2)     =     mean(beta_filter(mBaseX).^2);
+        ffAvg(ii,4*(ss-1) - 1)     =     mean(theta_filter(mBaseX).^2);
+        ffAvg(ii,4*(ss-1))         =     mean(delta_filter(mBaseX).^2);
         
-            tBaseCovXi  = cov(mBaseX');
-        
-        mPeakMeanXi             = RiemannianMean(tPeakCovXi);
-        mBaseMeanXi             = tBaseCovXi;        
-        tPeakCov(1:dimSubSpc,1:dimSubSpc,end+1)   = mPeakMeanXi;
-        tBaseCov(1:dimSubSpc,1:dimSubSpc,end+1)   = mBaseMeanXi;
-        
-        iiDist(ii,ss-1)    =   RiemannianDist( mPeakMeanXi,mBaseMeanXi);
         iiScore(ii,ss-1)   =   XlsFile(ii,ss+1);
         
     end
-    tPeakCov = tPeakCov(1:dimSubSpcMin,1:dimSubSpcMin,:);
-    tBaseCov = tBaseCov(1:dimSubSpcMin,1:dimSubSpcMin,:);
 
 end
 disp('Done!');
 
 %% Calculate Riemannian Distances
-n           =   size(tBaseCov,3);
-% zeroCov     =   eye(Nelc);
-vDist       =   nan(1,23);
-% vBase       =   nan(1,23);
-% vPeak       =   nan(1,23);
 
-for ii = 1:n
-    vDist(ii)    =   RiemannianDist(tPeakCov(:,:,ii),tBaseCov(:,:,ii));
-%     vBase(ii)    =   RiemannianDist(zeroCov,tBaseCov(:,:,ii));
-%     vPeak(ii)    =   RiemannianDist(zeroCov,tPeakCov(:,:,ii));
-end
+mRegii = [ffAvg,iiScore];
 
-mReg = [vDist;vScore];
-% mReg = [vBase;vPeak;vDist;vScore];
-
-mRegii = nan(0,2*length(vSessions));
-
-for ii = 1:27
-    flag = 0;
-    for jj = 1:length(vSessions)
-        if (isnan(iiDist(ii,jj)) || isnan(iiScore(ii,jj))) 
-            flag = 1;
-        end
-    end
-    if flag == 0
-        mRegii(end+1,:) = [iiDist(ii,:),iiScore(ii,1:length(vSessions)-1),iiScore(ii,length(vSessions))<14];
-    end
-end
  %% Make Diffusion Map and Parallel Transport calculations
 % %%% Create W distances matrix. Make sure to use only one session!
 % Nmats   =   size(tPeakCov,3);

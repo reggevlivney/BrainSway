@@ -1,7 +1,7 @@
 %% Clear
 close all;
 clear;
-% clc;
+clc;
 
 %% Import Data
 %dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
