@@ -60,24 +60,6 @@ for ii = 1 : Ns
 end
 disp('Done!');
 
-%% Make Diffusion Map and Parallel Transport calculations
-%%% Create W distances matrix. Make sure to use only one session!
-Nmats   =   size(tDataCov,3);
-mDists  =   zeros(Nmats,Nmats);
-for ii = 1:Nmats
-    for jj = ii+1:Nmats
-        mDists(ii,jj) = RiemannianDist(tDataCov(:,:,ii),tDataCov(:,:,jj));
-        mDists(jj,ii) = mDists(ii,jj);
-    end
-end
-eDiff        = mean(mDists(mDists~=0));
-mDistsDiff   = exp(-mDists.^2/eDiff^2);
-
-[mVDiff,mDDiff] = eig(mDistsDiff);
-
-mtSNE           = mVDiff*mDDiff;
-mtSNE           = TSNE(mtSNE,vScore,3,Nmats);
-
 %% Parallel Transport
 tMeanCovs = nan(Nelc,Nelc,Ns);
 for ii = 1:Ns
@@ -90,8 +72,51 @@ tDataCov2 = tDataCov;
 NLt = size(tDataCov,3);
 mB = tMeanCovs(:,:,1);
 for jj = 1:NLt
-    mAinv               = pinv(tMeanCovs(:,:,vSubjectOfCov(jj)));
+    mAinv               = inv(tMeanCovs(:,:,vSubjectOfCov(jj)));
     mE                  = (mB*mAinv)^(0.5);
+    if sum(eig(mE)<0) ~= 0
+        1;
+    end
     tDataCov2(:,:,jj)   = mE*tDataCov(:,:,jj)*mE';
+    tDataCov2(:,:,jj)   = (tTotalMean^(-0.5)*tDataCov2(:,:,jj)...
+                             *tTotalMean^(-0.5));
     disp(num2str(jj));
 end
+% tImDataCov2 = max(max(max(imag(tDataCov2))));
+tReDataCov2 = real(tDataCov2);
+
+%% Make Diffusion Map and Parallel Transport calculations
+%%% Create W distances matrix. Make sure to use only one session!
+Nmats   =   size(tDataCov,3);
+mDists  =   zeros(Nmats,Nmats);
+for ii = 1:Nmats
+    for jj = ii+1:Nmats
+        mDists(ii,jj) = RiemannianDist(tReDataCov2(:,:,ii),tReDataCov2(:,:,jj));
+        mDists(jj,ii) = mDists(ii,jj);
+    end
+end
+eDiff        = mean(mDists(mDists~=0));
+mDistsDiff   = exp(-mDists.^2/eDiff^2);
+
+[mVDiff,mDDiff] = eig(mDistsDiff);
+
+ mtSNE           = mVDiff*mDDiff;
+ mtSNE           = TSNE(mtSNE,vScore,3,Nmats);
+ 
+%% PCA
+mVecs   =   CovsToVecs(tReDataCov2).';
+mCoeff  =   pca(mVecs);
+mPCA    = mVecs*mCoeff;
+
+mPCAred = mPCA(:,1:3);
+scatter3(mPCAred(:,1),mPCAred(:,2),mPCAred(:,3),100,vScore,'Fill');
+%% Fucking Fuckers
+k=0
+for ii = 1:91
+e = eig(tReDataCov2(:,:,ii));
+if min(e)<0
+disp('FUCK EVERYTHING');
+k = k+1;
+end
+end
+k

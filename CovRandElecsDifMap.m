@@ -107,4 +107,4 @@ mDistsDiff   = exp(-mDists.^2/eDiff^2);
 [mVDiff,mDDiff] = eig(mDistsDiff);
 
 mtSNE           = mVDiff*mDDiff;
-mtSNE           = TSNE(mtSNE,vScore,10,23);
+mtSNE           = TSNE(mtSNE,vScore,3,Nmats);
