@@ -4,8 +4,8 @@ clear;
 % clc;
 
 %% Import Data
-dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-% dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+% dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
+  dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
 % dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
@@ -66,7 +66,7 @@ vMeanDetails    =   nan(1,nSess);
 for ii = 1 : Ns
 %     ss                  =   vSessions(ii);
     ss                  =   ii;
-    disp("Riemannian Mean over session " + num2str(ss));
+    disp("Riemannian Mean over subject " + num2str(ss));
     vMeanDetails(ii)    =   ss;
     vSessIdx            =   find(mTrialsMean(:,1) == ss);
     tMeanCov(:,:,ii)    =   RiemannianMean(tTrialsMeanCov(:,:,vSessIdx));
