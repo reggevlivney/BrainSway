@@ -120,19 +120,21 @@ for ii = 1 : nSess
     end
 end
 
+%% CovToVecs and PCA
+mPTVecs    = CovsToVecs(tPTDataCov).';
+[coeff, mDPTVecs] = pca(mPTVecs);
+% mDPTVecs = mPTVecs*coeff; 
+
+mVecs  = CovsToVecs(tTrialsMeanCov).';
+[coeff, mDVecs] = pca(mVecs);
+% mDVecs = mVecs*coeff; 
 %% Figures
 figure; % Color by session number
     subplot(1,2,2);
-        mPTVecs    = CovsToVecs(tPTDataCov).';
-        [coeff, mDPTVecs] = pca(mPTVecs);
-        % mDPTVecs = mPTVecs*coeff; 
         mDPTVecs = mDPTVecs(:,1:3);
         scatter3(mDPTVecs(:,1), mDPTVecs(:,2), mDPTVecs(:,3), 100, mMeanCovDetails(:,2), 'Fill');
         title("Sessions Scattering: after PT and PCA 3");
     subplot(1,2,1);
-        mVecs  = CovsToVecs(tTrialsMeanCov).';
-        [coeff, mDVecs] = pca(mVecs);
-        % mDVecs = mVecs*coeff; 
         mDVecs = mDVecs(:,1:3);
         scatter3(mDVecs(:,1), mDVecs(:,2), mDVecs(:,3), 100, mMeanCovDetails(:,2), 'Fill');
         title("Sessions Scattering: PCA 3");
