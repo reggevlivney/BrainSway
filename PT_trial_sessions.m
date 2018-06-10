@@ -54,16 +54,14 @@ disp('Done!');
 %% Parallel Transport by Subject
 % Riemannian Mean
 nSess           =   length(vSessions);
-tMeanCov        =   nan(Nelc,Nelc,nSess);
-vMeanDetails    =   nan(1,nSess);
-% for ii = 1 : nSess
+tMeanCov        =   nan(Nelc,Nelc,Ns);
+vMeanDetails    =   nan(1,Ns);
 for ii = 1 : Ns
-%     ss                  =   vSessions(ii);
     ss                  =   ii;
     disp("Riemannian Mean over subject " + num2str(ss));
     vMeanDetails(ii)    =   ss;
-    vSessIdx            =   find(mMeanCovDetails(:,1) == ss);
-    tMeanCov(:,:,ii)    =   RiemannianMean(tTrialsMeanCov(:,:,vSessIdx));
+    vSubjIdx            =   find(mMeanCovDetails(:,1) == ss);
+    tMeanCov(:,:,ii)    =   RiemannianMean(tTrialsMeanCov(:,:,vSubjIdx));
 end
 
 % Total Riemannian Mean
@@ -74,14 +72,12 @@ mMeanMeanCov = RiemannianMean(tMeanCov);
 
 tPTDataCov           = nan(Nelc,Nelc,size(tTrialsMeanCov,3));
 mMeanMinusSquareRoot = mMeanMeanCov^(-1/2);
-for ii = 1 : nSess
-    ss = vSessions(ii);
+for ii = 1 : Ns
+    ss = ii;
     E = ( mMeanMeanCov / tMeanCov(:,:,ii) )^(1/2);
-    vSessIdx            =   find(mMeanCovDetails(:,2)==ss);
-    for jj = vSessIdx'
-        tPTDataCov(:,:,jj) = E * tTrialsMeanCov(:,:,jj) * E.';
-%          = logm(mMeanMinusSquareRoot * M * mMeanMinusSquareRoot);
-%         stem((eig(M))); drawnow; pause(.4);
+    vSubjIdx            =   find(mMeanCovDetails(:,1) == ss);
+    for jj = vSubjIdx'
+        tPTDataCov(:,:,jj) = (E * tTrialsMeanCov(:,:,jj)) * E.';
     end
 end
 
@@ -91,12 +87,10 @@ nSess           =   length(vSessions);
 tMeanCov        =   nan(Nelc,Nelc,nSess);
 vMeanDetails    =   nan(1,nSess);
  for ii = 1 : nSess
-%for ii = 1 : Ns
      ss                  =   vSessions(ii);
-%    ss                  =   ii;
     disp("Riemannian Mean over session " + num2str(ss));
     vMeanDetails(ii)    =   ss;
-    vSessIdx            =   find(mMeanCovDetails(:,1) == ss);
+    vSessIdx            =   find(mMeanCovDetails(:,2) == ss);
     tMeanCov(:,:,ii)    =   RiemannianMean(tTrialsMeanCov(:,:,vSessIdx));
 end
 
@@ -115,11 +109,8 @@ for ii = 1 : nSess
     vSessIdx            =   find(mMeanCovDetails(:,2)==ss);
     for jj = vSessIdx'
         tPTDataCov(:,:,jj) = E * tTrialsMeanCov(:,:,jj) * E.';
-%          = logm(mMeanMinusSquareRoot * M * mMeanMinusSquareRoot);
-%         stem((eig(M))); drawnow; pause(.4);
     end
 end
-
 %% CovToVecs and PCA
 mPTVecs    = CovsToVecs(tPTDataCov).';
 [coeff, mDPTVecs] = pca(mPTVecs);
