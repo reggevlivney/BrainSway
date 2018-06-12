@@ -13,7 +13,6 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 vSubjectIdx        = XlsFile(:,1);   
 Nelc               = 45;  % Num of electrodes
 Nelc2              = 2*Nelc;
-vPreTime           = 201:900;
 vPostTime          = 1301:2000;
 vSessions          = 5;
 vExcludedElcs      = [55];
@@ -54,19 +53,6 @@ for ii = 1 : Ns
         mPostX                = data(vElectordeIdx,vPostTime,:);
         Nt                    = size(mPreX, 3);
         
-        %%% Projection of mX to non-singular subspace
-%        [mU, mS, ~]  = svd( mX(:,:,1) );
-%        dimSubSpc    = sum(diag(mS)>1);
-%        dimSubSpcMin = min([dimSubSpc,dimSubSpcMin]);
-%        mUSubSpc     = mU(:,1:dimSubSpc);
-%        
-%        mXSubSpc     = nan( dimSubSpc , 2000 , Nt );
-%           for tt = 1 : Nt
-%                   mXSubSpc(:,:,tt) = mUSubSpc'*mX(:,:,tt);
-%           end
-          
-          %%% Covariance calculation. To use code without projection,
-          %%% uncomment these 2 lines and comment the projection code.
         dimSubSpc    = Nelc2;
         mXSubSpc     = [mPreX;mPostX];
         tCovXi       = nan(dimSubSpc, dimSubSpc, Nt);

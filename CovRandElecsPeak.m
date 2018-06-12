@@ -76,6 +76,7 @@ mDistsDiff   = exp(-mDists.^2/eDiff^2);
 [mVDiff,mDDiff] = eig(mDistsDiff);
 
 mtSNE           = mVDiff*mDDiff;
+addpath('tSNE_matlab');
 mtSNE           = TSNE(mtSNE,vScore,3,Nmats);
 
 %% Parallel Transport
