@@ -11,11 +11,12 @@ XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %% Preprocess data
 vSubjectIdx        = XlsFile(:,1);        
-Nelc               = 40;  % Num of electrodes
+Nelc               = 10;  % Num of electrodes
 vSessions          = 2:5;
 vTime              = 1:2000;
 vElectordeIdx      = sort(randperm(62, Nelc));  % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
+vSubjectsInSession = vSubjectIdx;
 
 %% Create Cov matricies and take scores
 % mData             = nan(D, 0);
@@ -37,7 +38,7 @@ for ii = 1 : Ns
         load([dirPath, fileName]);
         disp(['Calculating for subject ' num2str(ii) ' of ' num2str(Ns) ...
             ', session ' num2str(ss)]);
-        mX              =   data(vElectordeIdx,vTime,:);
+        mX              =   fft(data(vElectordeIdx,vTime,:),[],2);
         Nt              =   size(mX, 3);
         for hh = 1:Nt
             mDetails(end+1,:)     =   [ii,ss,hh]; % [SubjectID,SessionNum,TrialNum]
@@ -48,4 +49,3 @@ for ii = 1 : Ns
 end
 disp('Covariances successfully calculated!');
 disp('HDRS Scores successfully saved!');
-
