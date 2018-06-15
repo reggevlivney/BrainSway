@@ -1,4 +1,4 @@
-function [ mV, mE , axes] = Diff_map(tDataCov , vSubjects, vScore )
+function [ mV, mE , axes] = Diff_map(tDataCov , vSubjects, vScore)
 % Runs diffusion maps on the input which is the data vector, in columns as
 % a mtrix
 
@@ -18,7 +18,7 @@ mA            = sparse_mD \ mK;     % and here I changed as well!
 eigvec        = mV(:,2:4);
 
 %% Plotting/Scattering the map after diffusion
-%%  Scattering - colored by score
+%  Scattering - colored by score
 figure();
 ax1 = subplot(1,2,1);
 grid on;
@@ -29,8 +29,8 @@ scatter3(mV(:,2),mV(:,3),mV(:,4),50,vScore,'filled');
     ylabel('\psi_3');
     zlabel('\psi_4');
     title('Diffusion map - colored by score')
-    
-%%  Scattering - colored by subject
+
+% Scattering - colored by subject
 ax2 = subplot(1,2,2);
 grid on;
 scatter3(mV(:,2),mV(:,3),mV(:,4),50,vSubjects,'filled');
@@ -42,7 +42,6 @@ scatter3(mV(:,2),mV(:,3),mV(:,4),50,vSubjects,'filled');
     title('Diffusion map - colored by subject')
 
 axes = [ax1,ax2];
-
 
 end
 
