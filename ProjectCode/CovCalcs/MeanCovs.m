@@ -1,11 +1,3 @@
-%% Clear
-close all;
-clear;
-% clc;
-
-%% Import Data
-load('features.mat');
-
 %% Calculates Rimannian Means of Cov matricies and take scores
 Nelc                = size(tDataCov,1);
 tMeanCov            = nan(Nelc,Nelc,0);
@@ -28,4 +20,4 @@ end
 disp('Done!');
 
 
-save('meanCovs.mat','tMeanCov','mMeanDetails','vScore');
+% save('meanCovs.mat','tMeanCov','mMeanDetails','vScore');
