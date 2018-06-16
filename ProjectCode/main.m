@@ -113,7 +113,9 @@ else
 end
     
 %% Print two random correative  and two non-correlative elctrodes
+
 CreateCor;
+
 %%
 cov_id      = randperm(size(tDataCov,3),1);
 Nelc        = size(tDataCov,1);
@@ -162,3 +164,33 @@ tt.FontSize = 18;
 xt.FontSize = 16;
 yt.FontSize = 16;
 lt.FontSize = 14;
+
+%% Trying work with the correlation coefficient
+CreateCor;
+tDataCov(tDataCov<1e-5) = 0 ;
+tDataCov                = 1000*tDataCov;
+MeanCovs;
+DiffMapCov;
+subplot(1,2,1);
+set(gca,'FontSize',18);
+subplot(1,2,2);
+set(gca,'FontSize',18);
+
+% Parallel Transport with given subjects.
+tMeanCov = covPT(tMeanCov,mMeanDetails(:,1));
+vAxes = [5 3 4];
+DiffMapCov;
+subplot(1,2,1);
+set(gca,'FontSize',18);
+title("Diffusion Maps after PT - Colored by Scores");
+subplot(1,2,2);
+set(gca,'FontSize',18);
+title("Diffusion Maps after PT - Colored by Subject");
+figure;
+scatter3(diffusion_matrix(:,vAxes(1)),diffusion_matrix(:,vAxes(2)),diffusion_matrix(:,vAxes(3)),50,vScore(:,2),'Fill');
+title("Diffusion Maps after PT - Colored by Session");
+
+figure;
+TSNE(diffusion_matrix, vScore(:,2), 3, 91, 5);
+title("TSNE after Parallel Transport"); 
+
