@@ -6,4 +6,3 @@ vScore(89,:)     = []; % ditto
 
 hlink = linkprop(axes,{'CameraPosition','CameraUpVector'});
 rotate3d on
-rotate3d on
