@@ -79,8 +79,8 @@ load('CovData\MeanCovs.mat');
 
 
 % Parallel Transport with given subjects.
-tMeanCov = covPT(tMeanCov,mMeanDetails(:,1));
-vAxes = [5 3 4];
+tMeanCov    = covPT(tMeanCov,mMeanDetails(:,1));
+vAxes       = [2 3 4];
 DiffMapCov;
 subplot(1,2,1);
 set(gca,'FontSize',18);
