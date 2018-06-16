@@ -15,7 +15,7 @@ load('CovData\trialCovs.mat');
 % MeanCovs;     need to evaluate just once and save
 % save('CovData\MeanCovs.mat','tMeanCov','mMeanDetails','vScore');
 load('CovData\MeanCovs.mat');
-
+vAxes = [2,3,4];
 DiffMapCov;
 subplot(1,2,1);
 set(gca,'FontSize',18);
@@ -120,9 +120,9 @@ CreateCor;
 cov_id      = randperm(size(tDataCov,3),1);
 Nelc        = size(tDataCov,1);
 cov         = tDataCov(:,:,cov_id);
-[~,Imin]    = min(abs(cov(:)));
+[covMin,Imin]    = min(abs(cov(:)));
 cov         = cov - eye(Nelc);
-[~,Imax]    = max(abs(cov(:)));
+[covMax,Imax]    = max(abs(cov(:)));
 
 dirPath             = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile             = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
@@ -167,6 +167,7 @@ lt.FontSize = 14;
 
 %% Trying work with the correlation coefficient
 CreateCor;
+vAxes = [2,3,4];
 tDataCov(tDataCov<1e-5) = 0 ;
 tDataCov                = 1000*tDataCov;
 MeanCovs;
@@ -191,6 +192,6 @@ scatter3(diffusion_matrix(:,vAxes(1)),diffusion_matrix(:,vAxes(2)),diffusion_mat
 title("Diffusion Maps after PT - Colored by Session");
 
 figure;
-TSNE(diffusion_matrix, vScore(:,2), 3, 91, 5);
+TSNE([diffusion_matrix,vScoreEX(:,1),vScoreEX(:,2)], vScoreEX(:,4)<0.5, 3, 90, 30);
 title("TSNE after Parallel Transport"); 
 
