@@ -16,11 +16,12 @@ vSessions          = 2:5;
 vTime              = 1:2000;
 vElectordeIdx      = sort(randperm(62, Nelc));  % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
+vSubjectsInSession = vSubjectIdx;
 
 %% Create Cov matricies and take scores
 % mData             = nan(D, 0);
 tDataCov            = nan(Nelc,Nelc,0);
-vScore              = nan(0,3);
+vScore              = nan(0,4);
 
 mDetails            = nan(0,3);
 
@@ -43,7 +44,7 @@ for ii = 1 : Ns
             mDetails(end+1,:)     =   [ii,ss,hh]; % [SubjectID,SessionNum,TrialNum]
             tDataCov(:,:,end+1)   =   cov(mX(:,:,hh).');
         end
-        vScore(end+1,:)           = [ii,ss,XlsFile(ii,ss+1)]; % [SubjectID,SessionNum,HDRS_SCORE]
+        vScore(end+1,:)           = [ii,ss,XlsFile(ii,ss+1),XlsFile(ii,9)]; % [SubjectID,SessionNum,HDRS_SCORE]
     end
 end
 disp('Covariances successfully calculated!');

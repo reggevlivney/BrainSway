@@ -1,4 +1,4 @@
-function [ mV, mE , axes] = Diff_map(tDataCov , vSubjects, vScore )
+function [ mV, mE , axes] = Diff_map(tDataCov , vSubjects, vScore ,vAxes)
 % Runs diffusion maps on the input which is the data vector, in columns as
 % a mtrix
 
@@ -22,7 +22,7 @@ eigvec        = mV(:,2:4);
 figure();
 ax1 = subplot(1,2,1);
 grid on;
-scatter3(mV(:,2),mV(:,3),mV(:,4),50,vScore,'filled');
+scatter3(mV(:,vAxes(1)),mV(:,vAxes(2)),mV(:,vAxes(3)),50,vScore,'filled');
     colormap jet;
     colorbar;
     xlabel('\psi_2');
@@ -33,7 +33,7 @@ scatter3(mV(:,2),mV(:,3),mV(:,4),50,vScore,'filled');
 %%  Scattering - colored by subject
 ax2 = subplot(1,2,2);
 grid on;
-scatter3(mV(:,2),mV(:,3),mV(:,4),50,vSubjects,'filled');
+scatter3(mV(:,vAxes(1)),mV(:,vAxes(2)),mV(:,vAxes(3)),50,vSubjects,'filled');
     colormap jet;
     colorbar;
     xlabel('\psi_2');
