@@ -15,7 +15,9 @@ sparse_mD = sparse(mD);     % Here's where I changed!!
 % Calculating A, it's eigenvalues and eigenvectors for the diffusion
 mA            = sparse_mD \ mK;     % and here I changed as well!
 [mV , mE]     = eig(mA);
-eigvec        = mV(:,2:4);
+% eigvec        = mV(:,2:4);
+mXX = mV*mE;
+eigvec = mXX(:,2:4);
 
 %% Plotting/Scattering the map after diffusion
 %%  Scattering - colored by score
