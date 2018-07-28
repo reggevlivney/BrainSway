@@ -24,7 +24,7 @@ vSubjectsInSession = vSubjectIdx;
 %% Create Cov matricies and take scores
 % mData             = nan(D, 0);
 tDataCov            = nan(Nelc,Nelc,0);
-vScore              = nan(0,3);
+mScore              = nan(0,3);
 mDetails            = nan(0,3);
 
 for ii = 1 : Ns
@@ -53,7 +53,7 @@ for ii = 1 : Ns
             mDetails(end+1,:)     =   [ii,ss,hh]; % [SubjectID,SessionNum,TrialNum]
             tDataCov(:,:,end+1)   =   cov(mX(:,:,hh).');
         end
-        vScore(end+1,:)           = [ii,ss,XlsFile(ii,ss+1)]; % [SubjectID,SessionNum,HDRS_SCORE]
+        mScore(end+1,:)           = [ii,ss,XlsFile(ii,ss+1)]; % [SubjectID,SessionNum,HDRS_SCORE]
     end
 end
 disp('Covariances successfully calculated!');
@@ -71,8 +71,22 @@ mDists = cal_dist_mat(tMeanCov);
 mDiffX = diff_maps(mDists,3);
 
 figure;
-scatter3(mDiffX(:,2),mDiffX(:,3),mDiffX(:,4),40,vScore(:,3),'filled');
-title("Diffusion Maps");
+scatter3(mDiffX(:,2),mDiffX(:,3),mDiffX(:,4),40,vScore,'filled');
+title("Diffusion Maps Colored by HDRS");
+xlabel("\psi_2");
+ylabel("\psi_3");
+zlabel("\psi_4");
+
+figure;
+scatter3(mDiffX(:,2),mDiffX(:,3),mDiffX(:,4),40,mMeanDetails(:,1),'filled');
+title("Diffusion Maps Colored by Subjects");
+xlabel("\psi_2");
+ylabel("\psi_3");
+zlabel("\psi_4");
+
+figure;
+scatter3(mDiffX(:,2),mDiffX(:,3),mDiffX(:,4),40,mMeanDetails(:,2),'filled');
+title("Diffusion Maps Colored by Sessions");
 xlabel("\psi_2");
 ylabel("\psi_3");
 zlabel("\psi_4");
