@@ -8,11 +8,11 @@ addpath('Functions');
 vAxes = [2,3,4];
 %% Calculation of covariance;
 
-% CreateCov;    need to evaluate just once and save
+% CreateCov;    %need to evaluate just once and save
 % save('CovData\trialCovs.mat','tDataCov','mDetails','vScore');
 load('CovData\trialCovs.mat');
 
-% MeanCovs;     need to evaluate just once and save
+% MeanCovs;     %need to evaluate just once and save
 % save('CovData\MeanCovs.mat','tMeanCov','mMeanDetails','vScore');
 load('CovData\MeanCovs.mat');
 vAxes = [2,3,4];
@@ -22,9 +22,9 @@ set(gca,'FontSize',18);
 subplot(1,2,2);
 set(gca,'FontSize',18);
 
-TSNE(diffusion_matrix, vScore(:,3), 3, 91, 10)
+TSNE(diffusion_matrix, vScoreEX(:,3), 3, 90, 10)
 title("tSNE after Diffusion Maps");
-mClass = [diffusion_matrix,vScore(:,[1,2]),vScore(:,4)<=0.5];
+mClass = [diffusion_matrix,vScore(:,[1,2]),vScoreEX(:,4)<=0.5];
 
 %% Variation with FFT of the signals;
 % CreateFFTCov;   % need to evaluate just once and save

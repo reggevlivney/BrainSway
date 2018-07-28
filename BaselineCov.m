@@ -52,11 +52,11 @@ for ii = 1 : Ns
             ', session ' num2str(ss)]);
         
         try
-            fileName    = ['Exp_EC\mat\Exp_EC_5013', num2str(subject), '_', num2str(ss), '.mat']; %Get subject's data    
+            fileName    = ['baseline\mat\Exp_EC_5013', num2str(subject), '_', num2str(ss), '.mat']; %Get subject's data    
             b_data      = load([dirPath, fileName]);     % Data without pulse
         catch 
             try
-                            fileName    = ['Exp_EC\mat\Exp_EC_5213', num2str(subject), '_', num2str(ss), '.mat']; %Get subject's data    
+                            fileName    = ['baseline\mat\Exp_EC_5213', num2str(subject), '_', num2str(ss), '.mat']; %Get subject's data    
                             b_data      = load([dirPath, fileName]);     % Data without pulse
             catch
             % Nothing to do
