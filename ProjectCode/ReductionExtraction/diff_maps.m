@@ -1,8 +1,8 @@
-function [ mDiffX] = diff_maps(mDists,vScore)
+function [ mDiffX] = diff_maps(mDists,alpha)
 % Runs diffusion maps on the input which is the data vector, in columns as
 % a mtrix
 % Calculating the Kernel for each dimension in the images
-eps          = std(mDists(:));
+eps          = alpha*std(mDists(:));
 mK           = exp(-(mDists.^2)/(2*eps^2));
 mK           = mK;
 % Calculating the diagonal matrix D

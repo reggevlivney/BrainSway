@@ -1,4 +1,4 @@
-%% Calculates Rimannian Means of Cov matricies and take scores
+%% Calculates Rimannian (or regular) Means of Cov matricies and take scores
 Nelc                = size(tDataCov,1);
 tMeanCov            = nan(Nelc,Nelc,0);
 mMeanDetails        = nan(0,2);
@@ -14,7 +14,8 @@ for ii = vSubj.'
         end
         mMeanDetails(end+1,:)    = [ii,ss];
         tMeanCov(:,:,end+1)      = RiemannianMean(tDataCov(:,:,idx));
-        disp("Calculates Riemannian Mean for subject " + num2str(ii) + " in session " + num2str(ss));
+%         tMeanCov(:,:,end+1)      = mean(tDataCov(:,:,idx),3);
+        disp("Calculates Mean for subject " + num2str(ii) + " in session " + num2str(ss));
     end
 end
 disp('Done!');
