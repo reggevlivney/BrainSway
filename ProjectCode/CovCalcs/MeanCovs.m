@@ -2,8 +2,8 @@
 Nelc                = size(tDataCov,1);
 tMeanCov            = nan(Nelc,Nelc,0);
 mMeanDetails        = nan(0,2);
-vSubj               = unique(vScore(:,1));
-vSess               = unique(vScore(:,2));
+vSubj               = unique(mScore(:,1));
+vSess               = unique(mScore(:,2));
 vScore              = nan(0,1);
 for ii = vSubj.'
     for ss = vSess.'

@@ -1,3 +1,5 @@
+%% Clear
+clear; clc; close all;
 %% Include all relevant folders
 addpath('RiemannianTools');
 addpath('CovCalcs');
@@ -8,22 +10,24 @@ addpath('Functions');
 
 %% Import Data
 % dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-% dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
-dirPath = 'D:\BrainSwayData\';                  %Matan's Path
+ dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+%dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %%  Choose a subset of electrodes and time window
 vSubjectIdx        = XlsFile(:,1);        
 Nelc               = 40;  % Num of electrodes
 vSessions          = 2:5;
-vTime              = 1:2000;
+vTime              = 1020:1300;
+tau                = 200; %time shift
 vElectordeIdx      = sort(randperm(62, Nelc));  % Pick random electrodes
 Ns                 = length(vSubjectIdx); %Number of subjects
 vSubjectsInSession = vSubjectIdx;
 
 %% Create Cov matricies and take scores
 % mData             = nan(D, 0);
-tDataCov            = nan(Nelc,Nelc,0);
+%tDataCov            = nan(Nelc,Nelc,0);
+tDataCov            = nan(0,0,0);
 mScore              = nan(0,3);
 mDetails            = nan(0,3);
 
@@ -42,11 +46,11 @@ for ii = 1 : Ns
             ', session ' num2str(ss)]);
         mXb             =   data(vElectordeIdx,vTime,:);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%  Proccess in Time    %%
-        mX = mXb;       % no proccess in time
-%         mX = FFT(mXb);
+        %%%  Proccess in Time    %%%
+%         mX = mXb;       % no proccess in time
+        mX = fft(mXb,[],2);
 %         mX = filter(mXb);
-%         mX = ...;
+%         mX = cat(1,mXb(:,1:end-tau,:),mXb(:,tau+1:end,:));
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         Nt              =   size(mX, 3);
         for hh = 1:Nt
