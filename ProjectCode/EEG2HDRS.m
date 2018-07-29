@@ -10,8 +10,8 @@ addpath('Functions');
 
 %% Import Data
 % dirPath = 'C:\Users\Oryair\Desktop\Workarea\BrainSway\'; %Or's path
-%  dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
-dirPath = 'D:\BrainSwayData\';                  %Matan's Path
+ dirPath = 'C:\Users\DELL\Desktop\Data for P4\'; %Reggev's path
+% dirPath = 'D:\BrainSwayData\';                  %Matan's Path
 XlsFile = xlsread([dirPath, 'clinicalHDRS-2.xlsx']);
 
 %%  Choose a subset of electrodes and time window
@@ -48,7 +48,7 @@ for ii = 1 : Ns
         mX             =   data(vElectordeIdx,vTime,:);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  Proccess in Time    %%%
-%         mX = mX;       % no proccess in time
+        mX = mX;       % no proccess in time
 %         mX = fft(mX,[],2);
 %         mX = EEG_filter(mX);
 %         mX = cat(1,mXb(:,1:end-tau,:),mXb(:,tau+1:end,:));
@@ -71,10 +71,10 @@ MeanCovs;
 CreateBLCov;
 vScore = mScore(:,3);
 %%  Parallel Transport
-
+tPTCovs = covPT(tMeanCov,mMeanDetails(:,1));
 %%  Distance Matrix
-mDists = cal_dist_mat(tMeanCov);
-
+% mDists = cal_dist_mat(tMeanCov);
+mDists = cal_dist_mat(tPTCovs);
 %%  Manifold Learning - Diffusion Maps
 mDiffX = diff_maps(mDists,3.5);
 
